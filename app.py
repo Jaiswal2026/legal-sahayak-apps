@@ -31,7 +31,7 @@ if 'manual_lawyer_logged' not in st.session_state:
 if 'gemini_key' not in st.session_state:
     st.session_state.gemini_key = ""
 
-# लाइव जेमिनी एआई इंजन कनेक्शन फंक्शन
+# एआई कनेक्शन फंक्शन
 def call_gemini_ai(user_key, prompt_text):
     try:
         api_url = f"https://googleapis.com{user_key}"
@@ -121,19 +121,16 @@ else:
 
     # 📑 भाग 1: PETITIONER FILE PAGE
     if st.session_state.current_page == "Petitioner File":
-        st.markdown("<h1 style='text-align: center; font-family: sans-serif; letter-spacing: 2px; text-decoration: underline; font-size: 32px; margin-bottom: 25px; color: #ffffff;'>PETITIONER FILE</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; text-decoration: underline; font-size: 32px; color: #ffffff;'>PETITIONER FILE</h1>", unsafe_allow_html=True)
         col_p, col_r = st.columns(2)
         with col_p:
-            st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1;'>PETITIONER NAME, ADRESS</p>", unsafe_allow_html=True)
-            p_info = st.text_area("P_Address", label_visibility="collapsed", placeholder="प्रार्थी का नाम और पूरा पता दर्ज करें...", height=80)
+            p_info = st.text_area("P_Address", placeholder="प्रार्थी का नाम और पूरा पता दर्ज करें...", height=80)
         with col_r:
-            st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1; text-align: right;'>RESPONDENT NAME, ADRESS</p>", unsafe_allow_html=True)
-            r_info = st.text_area("R_Address", label_visibility="collapsed", placeholder="प्रतिवादी का नाम और पूरा पता दर्ज करें...", height=80)
-        st.markdown("<h2 style='text-align: center; font-family: sans-serif; font-size: 24px; color: #ffffff; margin-top: 35px; margin-bottom: 25px;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
+            r_info = st.text_area("R_Address", placeholder="प्रतिवादी का नाम और पूरा पता दर्ज करें...", height=80)
+        st.markdown("<h2 style='text-align: center; font-size: 24px; color: #ffffff;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
         audio_file = st.file_uploader("AUDIO UPLOAD", type=["mp3", "wav", "m4a"])
         image_file = st.file_uploader("Image upload", type=["png", "jpg", "jpeg"])
         video_file = st.file_uploader("Witness video upload", type=["mp4", "mov"])
-        st.warning("⚠️ लिखित ब्यौरा प्रणाली: साक्ष्य के 3 मुख्य पॉइंट्स दर्ज करें:")
         p_p1 = st.text_input("पॉइंट 1: प्रार्थी के इस सबूत में विरोधी के खिलाफ क्या मुख्य बात साबित होती है?")
         p_p2 = st.text_input("पॉइंट 2: यह घटना किस तारीख और समय की है?")
         p_p3 = st.text_input("पॉइंट 3: अन्य विवरण:")
@@ -142,14 +139,23 @@ else:
                 with st.spinner("🧠 लाइव गूगल जेमिनी एआई प्रार्थी की स्ट्रांगेस्ट याचिका ड्राफ्ट कर रहा है..."):
                     pet_prompt = f"Draft the strongest court petition copy on behalf of petitioner in Hindi. Petitioner: {p_info}. Respondent: {r_info}. Evidence details: {p_p1}, {p_p2}, {p_p3}. Include relevant sections of Indian Law (BNS)."
                     result = call_gemini_ai(st.session_state.gemini_key, pet_prompt)
-                    st.success("🔒 एआई फॉरेंसिक जांच सफल! 1000% लाभ ट्रांसफर एक्टिव।")
-                    st.markdown("#### 🛡️ एआई द्वारा तैयार अत्यंत मजबूत याचिका प्रतिलिपि:")
+                    st.success("🔒 एआई फॉरेंसिक जांच सफल!")
                     st.write(result)
             elif not st.session_state.gemini_key:
-                st.error("🔑 एआई दिमाग बंद है! पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
+                st.error("🔑 कृपया पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
             else:
                 st.error("🛑 कृपया प्रार्थी/प्रतिवादी का नाम-पता और अनिवार्य लिखित ब्यौरा अवश्य भरें!")
-        st.markdown("<div style='text-align: center; margin-top: 40px;'><a href='#' style='color: #cbd5e1; text-decoration: none; font-size: 16px; font-family: monospace;'>download the Petition copy here</a></div>", unsafe_allow_html=True)
 
     # 🛡️ भाग 2: RESPONDENT FILE PAGE
     elif st.session_state.current_page == "Respondent File":
+        st.markdown("<h1 style='text-align: center; text-decoration: underline; font-size: 32px; color: #ffffff;'>RESPONDENT FILE</h1>", unsafe_allow_html=True)
+        col_r2, col_p2 = st.columns(2)
+        with col_r2:
+            r_info2 = st.text_area("R_Address2", placeholder="प्रतिवादी का नाम और पूरा पता यहाँ दर्ज करें...", height=80)
+        with col_p2:
+            p_info2 = st.text_area("P_Address2", placeholder="प्रार्थी का नाम और पूरा पता यहाँ दर्ज करें...", height=80)
+        st.markdown("<h2 style='text-align: center; font-size: 24px; color: #ffffff;'>Evidence Respondent Against Petitioner</h2>", unsafe_allow_html=True)
+        pet_copy_file = st.file_uploader("PETITIONER'S COPY UPLOAD", type=["pdf", "png", "jpg"])
+        r_audio = st.file_uploader("AUDIO UPLOAD", type=["mp3", "wav", "m4a"])
+        r_image = st.file_uploader("Image upload", type=["png", "jpg", "jpeg"])
+        r_video = st.file_uploader("Witness video upload", type=["mp4", "mov"])
