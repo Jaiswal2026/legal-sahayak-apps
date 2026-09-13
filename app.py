@@ -1,44 +1,157 @@
 import streamlit as st
+import time
+import requests
 
-st.set_page_config(page_title="AI Legal Sahayak Pro", page_icon="⚖️", layout="centered")
+# --- आपके ऐप का असली नाम और आइकॉन सेटिंग्स (फुल स्क्रीन सपोर्ट) ---
+st.set_page_config(
+    page_title="LEXA", 
+    page_icon="⚖️", 
+    layout="wide"
+)
 
-# --- ऐप का मुख्य आइकॉन और हेडर (Vecteezy Page 13 Clean Style) ---
+# कर्सिव फ़ॉन्ट्स को लोड करना
 st.markdown("""
-    <div style='text-align: center; margin-bottom: 20px;'>
-        <h1 style='font-size: 80px; margin: 0;'>🛡️⚖️</h1>
-        <h1 style='color: #1E3A8A; margin: 0; font-family: sans-serif;'>AI Legal Sahayak Pro</h1>
-        <p style='color: #D97706; font-size: 18px; font-weight: bold; margin: 5px 0 0 0;'>
-            वकील और आम जनता के लिए लाइफटाइम न्याय रक्षक (Page 13 Design Style)
-        </p>
-    </div>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .block-container { padding-top: 2rem; padding-bottom: 2rem; }
+    </style>
 """, unsafe_allow_html=True)
 
-st.divider()
+# सेशन स्टेट्स
+if 'terms_accepted' not in st.session_state:
+    st.session_state.terms_accepted = False
+if 'timer_complete' not in st.session_state:
+    st.session_state.timer_complete = False
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = "Petitioner File"
+if 'manual_lawyer_logged' not in st.session_state:
+    st.session_state.manual_lawyer_logged = False
+if 'gemini_key' not in st.session_state:
+    st.session_state.gemini_key = ""
 
-# --- मुख्य फीचर्स और वकीलों की डायरी ---
-st.sidebar.title("📁 वकीलों की डिजिटल डायरी")
-menu = st.sidebar.radio("नेविगेट करें:", ["नया केस ड्राफ्ट करें", "लाइव केस स्टेटस ट्रैकर", "भविष्य के लाइव अपडेट्स"])
-
-if menu == "नया केस ड्राफ्ट करें":
-    st.write("### 📂 केस की कॉपी और सबूत अपलोड करें")
-    case_copy = st.file_uploader("शिकायत/केस की कॉपी (PDF/Image)", type=["pdf", "png", "jpg"])
-    evidence = st.file_uploader("आपके पास मौजूद पक्के सबूत (Audio/Chats/Screenshots)", type=["pdf", "png", "jpg", "mp3"])
+# =========================================================================
+# 🌌 स्क्रीन 1: बैकग्राउंड में ब्लर लोगो और SKIP TIMER वाला टर्म्स पेज
+# =========================================================================
+if not st.session_state.terms_accepted:
+    st.markdown("""
+        <div style='position: relative; background-color: #0f172a; padding: 30px; border-radius: 20px; border: 3px solid #d97706; margin-top: 10px; color: #ffffff; overflow: hidden; max-width: 700px; margin-left: auto; margin-right: auto;'>
+            <div style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                        background-image: url("https://postimg.cc"); 
+                        background-size: cover; background-position: center; 
+                        filter: blur(15px) brightness(0.2); opacity: 0.35; z-index: 1;'>
+            </div>
+            <div style='position: relative; z-index: 2; text-align: center;'>
+                <div style='display: flex; justify-content: center; margin-bottom: 25px; padding-top: 10px;'>
+                    <img src='https://postimg.cc' style='width: 140px; height: 210px; object-fit: cover; border-radius: 15px; box-shadow: 0px 10px 30px rgba(217, 119, 6, 0.3); border: 1px solid #d97706;'>
+                </div>
+                <h1 style='color: #ffffff; margin: 5px 0; font-family: "Georgia", serif; font-weight: bold; letter-spacing: 3px; font-size: 42px;'>LEXA</h1>
+                <p style='color: #f59e0b; margin: 0; font-family: "Dancing Script", cursive; font-size: 32px; font-weight: bold;'>by jaiswal</p>
+                <hr style='border: 1px solid #334155; margin: 20px 0;'>
+                <div style='text-align: left; padding: 10px; font-family: sans-serif; line-height: 1.6;'>
+                    <h3 style='color: #f59e0b; margin-bottom: 5px;'>ℹ️ ऐप का मुख्य काम (Core Mission)</h3>
+                    <p style='color: #cbd5e1; font-size: 14px; margin-top: 0;'>यह भारत का सबसे एडवांस एआई कानूनी सहायक प्लेटफॉर्म है। इसका मुख्य काम शिकायत/केस की कॉपियों का विश्लेषण करना, डिजिटल सबूतों और गवाहों के बयानों की आपस में फॉरेंसिक तुलना करके विरोधी पक्ष के झूठ को पकड़ना और उनके खिलाफ सुप्रीम कोर्ट के अचूक फैसलों के साथ मजबूत कानूनी याचिका और जवाब तैयार करना है।</p>
+                </div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     
-    if st.button("⚖️ Generate Unbeatable Reply & Supreme Court Judgments"):
-        if case_copy and evidence:
-            st.success("सफलतापूर्वक एनालिसिस पूरा हुआ!")
-            st.write("#### 📝 रिप्लाई ड्राफ्ट और सुप्रीम कोर्ट जजमेंट प्रतिलिपि:")
-            st.text_area("Legal Draft:", "The allegations are false and contradict the digital logs... [Supreme Court Citation Attached: Rajnesh v. Neha (2021) / Preeti Gupta v. State of Jharkhand]", height=250)
-            st.download_button(label="📥 Download Draft With SC Judgments (PDF)", data="Sample PDF Content", file_name="Legal_Draft_With_Judgments.pdf")
-        else:
-            st.error("कृपया आगे बढ़ने के लिए केस कॉपी और सबूत दोनों अपलोड करें।")
+    st.write("")
+    timer_placeholder = st.empty()
+    if not st.session_state.timer_complete:
+        for seconds in range(5, 0, -1):
+            timer_placeholder.markdown(f"<p style='text-align: center; color: #94a3b8;'>⏳ आप {seconds} सेकंड बाद स्किप कर सकते हैं...</p>", unsafe_allow_html=True)
+            time.sleep(1)
+        st.session_state.timer_complete = True
+        st.rerun()
+    
+    if st.session_state.timer_complete:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ I Agree & Enter LEXA", use_container_width=True):
+                st.session_state.terms_accepted = True
+                st.rerun()
+        with col2:
+            if st.button("⏩ SKIP (आगे बढ़ें)", use_container_width=True):
+                st.session_state.terms_accepted = True
+                st.rerun()
 
-elif menu == "लाइव केस स्टेटस ट्रैकर":
-    st.write("### 🔍 Live e-Courts केस स्टेटस ट्रैकर")
-    cnr_number = st.text_input("अपना 16 अंकों का CNR नंबर दर्ज करें:")
-    if st.button("सर्च करें"):
-        st.info("लाइव कोर्ट सर्वर से कनेक्ट हो रहा है... यह मॉड्यूल भविष्य के अपडेट के साथ हमेशा लाइव सिंक रहेगा।")
+# =========================================================================
+# 🛡️ स्क्रीन 2: मुख्य वर्किंग इंटरफेस (थ्री-पेज नेविगेशन)
+# =========================================================================
+else:
+    st.markdown("""
+        <div style='text-align: center; color: #ffffff; font-family: sans-serif; margin-bottom: 10px;'>
+            <div style='display: flex; justify-content: center; margin-bottom: 15px;'>
+                <img src='https://postimg.cc' style='width: 95px; height: 140px; object-fit: cover; border-radius: 10px; border: 1px solid #d97706;'>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
-elif menu == "भविष्य के लाइव अपडेट्स":
-    st.write("### 🔄 सिस्टम लाइफटाइम अपडेट और सुरक्षा")
-    st.info("इस ऐप को लाइफटाइम फ्री सर्वर पर एक्टिव रखा गया है। वकीलों के काम को आसान बनाने के लिए नए कानूनों के बदलाव इस ऐप में अपने आप अपडेट होते रहेंगे।")
+    btn_col1, btn_col2, btn_col3 = st.columns(3)
+    with btn_col1:
+        if st.button("📝 Petitioner File (प्रार्थी)", use_container_width=True, type="primary" if st.session_state.current_page == "Petitioner File" else "secondary"):
+            st.session_state.current_page = "Petitioner File"
+            st.rerun()
+    with btn_col2:
+        if st.button("🛡️ Respondent File (प्रतिवादी)", use_container_width=True, type="primary" if st.session_state.current_page == "Respondent File" else "secondary"):
+            st.session_state.current_page = "Respondent File"
+            st.rerun()
+    with btn_col3:
+        if st.button("💼 Advocates Manual Login (वकील लॉगिन)", use_container_width=True, type="primary" if st.session_state.current_page == "Advocates Manual Login" else "secondary"):
+            st.session_state.current_page = "Advocates Manual Login"
+            st.rerun()
+
+    st.write("---")
+
+    def call_gemini_ai(user_key, prompt_text):
+        try:
+            api_url = f"https://googleapis.com{user_key}"
+            headers = {'Content-Type': 'application/json'}
+            payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
+            response = requests.post(api_url, headers=headers, json=payload)
+            if response.status_code == 200:
+                return response.json()['candidates']['content']['parts']['text']
+            else:
+                return "⚠️ एआई चाबी (API Key) अमान्य है। कृपया वकील लॉगिन में जाकर सही चाबी डालें।"
+        except Exception as e:
+            return f"⚠️ कनेक्शन में अस्थाई रुकावट: {str(e)}"
+
+    # 📑 भाग 1: PETITIONER FILE PAGE
+    if st.session_state.current_page == "Petitioner File":
+        st.markdown("<h1 style='text-align: center; font-family: sans-serif; letter-spacing: 2px; text-decoration: underline; font-size: 32px; margin-bottom: 25px; color: #ffffff;'>PETITIONER FILE</h1>", unsafe_allow_html=True)
+        col_p, col_r = st.columns(2)
+        with col_p:
+            st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1;'>PETITIONER NAME, ADRESS</p>", unsafe_allow_html=True)
+            p_info = st.text_area("P_Address", label_visibility="collapsed", placeholder="प्रार्थी का नाम और पूरा पता दर्ज करें...", height=80)
+        with col_r:
+            st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1; text-align: right;'>RESPONDENT NAME, ADRESS</p>", unsafe_allow_html=True)
+            r_info = st.text_area("R_Address", label_visibility="collapsed", placeholder="प्रतिवादी का नाम और पूरा पता दर्ज करें...", height=80)
+
+        st.markdown("<h2 style='text-align: center; font-family: sans-serif; font-size: 24px; color: #ffffff;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
+        audio_file = st.file_uploader("AUDIO UPLOAD (Mandatory Written Entry System)", type=["mp3", "wav", "m4a"])
+        image_file = st.file_uploader("Image upload (Mandatory Written Entry System)", type=["png", "jpg", "jpeg"])
+        video_file = st.file_uploader("Witness video upload (Mandatory Written Entry System)", type=["mp4", "mov"])
+
+        st.warning("⚠️ लिखित ब्यौरा प्रणाली: साक्ष्य के 3 मुख्य पॉइंट्स दर्ज करें:")
+        p_p1 = st.text_input("पॉइंट 1: प्रार्थी के इस सबूत में विरोधी के खिलाफ क्या मुख्य बात साबित होती है?")
+        p_p2 = st.text_input("पॉइंट 2: यह घटना किस तारीख और समय की है?")
+        p_p3 = st.text_input("पॉइंट 3: अन्य विवरण:")
+
+        if st.button("⚖️ एआई फॉरेंसिक जांच एवं स्ट्रांगेस्ट याचिका तैयार करें", use_container_width=True):
+            if p_info and r_info and p_p1 and st.session_state.gemini_key:
+                with st.spinner("🧠 लाइव गूगल जेमिनी एआई याचिका प्रतिलिपि तैयार कर रहा है..."):
+                    pet_prompt = f"You are LEXA Legal AI. Petitioner is {p_info} and Respondent is {r_info}. The evidence shows: {p_p1}. Draft the strongest court petition copy on behalf of the petitioner in Hindi incorporating BNS laws and Supreme Court judgments."
+                    result = call_gemini_ai(st.session_state.gemini_key, pet_prompt)
+                    st.success("🔒 एआई फॉरेंसिक जांच सफल! 1000% लाभ ट्रांसफर एक्टिव।")
+                    st.write(result)
+            elif not st.session_state.gemini_key:
+                st.error("🔑 एआई दिमाग बंद है! कृपया पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
+            else:
+                st.error("🛑 कृपया प्रार्थी/प्रतिवादी का नाम-पता और अनिवार्य लिखित ब्यौरा अवश्य भरें!")
+
+        st.markdown("<div style='text-align: center; margin-top: 40px;'><a href='#' style='color: #cbd5e1; text-decoration: none; font-size: 16px; font-family: monospace;'>download the Petition copy here</a></div>", unsafe_allow_html=True)
+
+    # 🛡️ भाग 2: RESPONDENT FILE PAGE
+    elif st.session_state.current_page == "Respondent File":
