@@ -39,7 +39,7 @@ def call_gemini_ai(user_key, prompt_text):
         payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
         response = requests.post(api_url, headers=headers, json=payload)
         if response.status_code == 200:
-            return response.json()['candidates'][0]['content']['parts'][0]['text']
+            return response.json()['candidates']['content']['parts']['text']
         else:
             return "⚠️ एआई चाबी (API Key) अमान्य है। कृपया वकील लॉगिन में जाकर सही चाबी दोबारा डालें।"
     except Exception as e:
