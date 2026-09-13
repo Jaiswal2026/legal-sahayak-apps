@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import requests
 
-# --- आपके ऐप का असली नाम और आइकॉन सेटिंग्स (फुल स्क्रीन सपोर्ट) ---
+# --- आपके ऐप का असली नाम और आइकॉन सेटिंग्स ---
 st.set_page_config(
     page_title="LEXA", 
     page_icon="⚖️", 
@@ -118,7 +118,6 @@ else:
         except Exception as e:
             return f"⚠️ कनेक्शन में अस्थाई रुकावट: {str(e)}"
 
-    # 📑 भाग 1: PETITIONER FILE PAGE
     if st.session_state.current_page == "Petitioner File":
         st.markdown("<h1 style='text-align: center; font-family: sans-serif; letter-spacing: 2px; text-decoration: underline; font-size: 32px; margin-bottom: 25px; color: #ffffff;'>PETITIONER FILE</h1>", unsafe_allow_html=True)
         col_p, col_r = st.columns(2)
@@ -129,29 +128,32 @@ else:
             st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1; text-align: right;'>RESPONDENT NAME, ADRESS</p>", unsafe_allow_html=True)
             r_info = st.text_area("R_Address", label_visibility="collapsed", placeholder="प्रतिवादी का नाम और पूरा पता दर्ज करें...", height=80)
 
-        st.markdown("<h2 style='text-align: center; font-family: sans-serif; font-size: 24px; color: #ffffff;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
-        audio_file = st.file_uploader("AUDIO UPLOAD (Mandatory Written Entry System)", type=["mp3", "wav", "m4a"])
-        image_file = st.file_uploader("Image upload (Mandatory Written Entry System)", type=["png", "jpg", "jpeg"])
-        video_file = st.file_uploader("Witness video upload (Mandatory Written Entry System)", type=["mp4", "mov"])
+        st.markdown("<h2 style='text-align: center; font-family: sans-serif; font-size: 24px; color: #ffffff; margin-top: 35px; margin-bottom: 25px;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
+        audio_file = st.file_uploader("AUDIO UPLOAD", type=["mp3", "wav", "m4a"])
+        image_file = st.file_uploader("Image upload", type=["png", "jpg", "jpeg"])
+        video_file = st.file_uploader("Witness video upload", type=["mp4", "mov"])
 
         st.warning("⚠️ लिखित ब्यौरा प्रणाली: साक्ष्य के 3 मुख्य पॉइंट्स दर्ज करें:")
-        p_p1 = st.text_input("पॉइंट 1: प्रार्थी के इस सबूत में विरोधी के खिलाफ क्या मुख्य बात साबित होती है?")
-        p_p2 = st.text_input("पॉइंट 2: यह घटना किस तारीख और समय की है?")
-        p_p3 = st.text_input("पॉइंट 3: अन्य विवरण:")
+        p_p1 = st.text_input("पॉइंट 1:")
+        p_p2 = st.text_input("पॉइंट 2:")
+        p_p3 = st.text_input("पॉइंट 3:")
 
         if st.button("⚖️ एआई फॉरेंसिक जांच एवं स्ट्रांगेस्ट याचिका तैयार करें", use_container_width=True):
             if p_info and r_info and p_p1 and st.session_state.gemini_key:
-                with st.spinner("🧠 लाइव गूगल जेमिनी एआई याचिका प्रतिलिपि तैयार कर रहा है..."):
-                    pet_prompt = f"You are LEXA Legal AI. Petitioner is {p_info} and Respondent is {r_info}. The evidence shows: {p_p1}. Draft the strongest court petition copy on behalf of the petitioner in Hindi incorporating BNS laws and Supreme Court judgments."
+                with st.spinner("🧠 लाइव गूगल जेमिनी एआई प्रार्थी की स्ट्रांगेस्ट याचिका ड्राफ्ट कर रहा है..."):
+                    pet_prompt = f"Draft strongest petition copy in Hindi for Petitioner: {p_info} against Respondent: {r_info} based on facts: {p_p1}, {p_p2}."
                     result = call_gemini_ai(st.session_state.gemini_key, pet_prompt)
-                    st.success("🔒 एआई फॉरेंसिक जांच सफल! 1000% लाभ ट्रांसफर एक्टिव।")
+                    st.success("🔒 एआई फॉरेंसिक जांच सफल!")
                     st.write(result)
             elif not st.session_state.gemini_key:
-                st.error("🔑 एआई दिमाग बंद है! कृपया पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
-            else:
-                st.error("🛑 कृपया प्रार्थी/प्रतिवादी का नाम-पता और अनिवार्य लिखित ब्यौरा अवश्य भरें!")
+                st.error("🔑 कृपया पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
 
         st.markdown("<div style='text-align: center; margin-top: 40px;'><a href='#' style='color: #cbd5e1; text-decoration: none; font-size: 16px; font-family: monospace;'>download the Petition copy here</a></div>", unsafe_allow_html=True)
 
-    # 🛡️ भाग 2: RESPONDENT FILE PAGE
     elif st.session_state.current_page == "Respondent File":
+        st.markdown("<h1 style='text-align: center; font-family: sans-serif; letter-spacing: 2px; text-decoration: underline; font-size: 32px; margin-bottom: 25px; color: #ffffff;'>RESPONDENT FILE</h1>", unsafe_allow_html=True)
+        col_r2, col_p2 = st.columns(2)
+        with col_r2:
+            st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1;'>RESPONDENT NAME, ADRESS</p>", unsafe_allow_html=True)
+            r_info2 = st.text_area("R_Address2", label_visibility="collapsed", placeholder="प्रतिवादी का नाम और पूरा पता यहाँ दर्ज करें...", height=80)
+        with col_p2:
