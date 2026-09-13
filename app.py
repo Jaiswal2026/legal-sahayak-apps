@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown("""
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://googleapis.com/css2?family=Dancing+Script:wght=700&display=swap" rel="stylesheet">
     <style>
         .block-container { padding-top: 2rem; padding-bottom: 2rem; }
     </style>
@@ -46,7 +46,7 @@ def call_gemini_ai(user_key, prompt_text):
         return f"⚠️ कनेक्शन में अस्थाई रुकावट: {str(e)}"
 
 # =========================================================================
-# 🌌 स्क्रीन 1: बैकग्राउंड में ब्लर लोगो और SKIP TIMER वाला टर्म्स谱 पेज
+# 🌌 स्क्रीन 1: बैकग्राउंड में ब्लर लोगो और SKIP TIMER वाला टर्म्स पेज
 # =========================================================================
 if not st.session_state.terms_accepted:
     st.markdown("""
@@ -103,7 +103,6 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
-    # वीआईपी नेविगेशन बटन्स
     btn_col1, btn_col2, btn_col3 = st.columns(3)
     with btn_col1:
         if st.button("📝 Petitioner File (प्रार्थी)", use_container_width=True, type="primary" if st.session_state.current_page == "Petitioner File" else "secondary"):
@@ -130,17 +129,14 @@ else:
         with col_r:
             st.markdown("<p style='font-size: 14px; font-weight: bold; color: #cbd5e1; text-align: right;'>RESPONDENT NAME, ADRESS</p>", unsafe_allow_html=True)
             r_info = st.text_area("R_Address", label_visibility="collapsed", placeholder="प्रतिवादी का नाम और पूरा पता दर्ज करें...", height=80)
-
         st.markdown("<h2 style='text-align: center; font-family: sans-serif; font-size: 24px; color: #ffffff; margin-top: 35px; margin-bottom: 25px;'>Evidence of Petitioner Against Respondent</h2>", unsafe_allow_html=True)
         audio_file = st.file_uploader("AUDIO UPLOAD", type=["mp3", "wav", "m4a"])
         image_file = st.file_uploader("Image upload", type=["png", "jpg", "jpeg"])
         video_file = st.file_uploader("Witness video upload", type=["mp4", "mov"])
-
         st.warning("⚠️ लिखित ब्यौरा प्रणाली: साक्ष्य के 3 मुख्य पॉइंट्स दर्ज करें:")
         p_p1 = st.text_input("पॉइंट 1: प्रार्थी के इस सबूत में विरोधी के खिलाफ क्या मुख्य बात साबित होती है?")
         p_p2 = st.text_input("पॉइंट 2: यह घटना किस तारीख और समय की है?")
         p_p3 = st.text_input("पॉइंट 3: अन्य विवरण:")
-
         if st.button("⚖️ एआई फॉरेंसिक जांच एवं स्ट्रांगेस्ट याचिका तैयार करें", use_container_width=True):
             if p_info and r_info and p_p1 and st.session_state.gemini_key:
                 with st.spinner("🧠 लाइव गूगल जेमिनी एआई प्रार्थी की स्ट्रांगेस्ट याचिका ड्राफ्ट कर रहा है..."):
@@ -153,7 +149,6 @@ else:
                 st.error("🔑 एआई दिमाग बंद है! पहले 'Advocates Manual Login' पेज पर जाकर अपनी Google API Key पेस्ट करें।")
             else:
                 st.error("🛑 कृपया प्रार्थी/प्रतिवादी का नाम-पता और अनिवार्य लिखित ब्यौरा अवश्य भरें!")
-
         st.markdown("<div style='text-align: center; margin-top: 40px;'><a href='#' style='color: #cbd5e1; text-decoration: none; font-size: 16px; font-family: monospace;'>download the Petition copy here</a></div>", unsafe_allow_html=True)
 
     # 🛡️ भाग 2: RESPONDENT FILE PAGE
